@@ -1,20 +1,10 @@
-import React, { ReactElement, useEffect, useState } from "react";
-import TwubricScoreTable from "../components/Twubric/TwubricScoreTable";
-import DateFilter from "../components/Twubric/DateFilter";
+import { ReactElement, useEffect, useState } from "react";
+import TwubricScoreTable from "../components/twubric/TwubricScoreTable";
+import DateFilter from "../components/twubric/DateFilter";
 import { useSelector } from "react-redux";
 import { GetData } from "../redux/action/action";
 import { useDispatch } from "react-redux";
-
-interface Follower {
-  uid: string;
-  twubric: {
-    total: number;
-    friends: number;
-    influence: number;
-    chirpiness: number;
-  };
-  join_date: string;
-}
+import { Follower } from "../components/types";
 
 export const TwubricPage = (): ReactElement => {
   const [followers, setFollowers] = useState<Follower[] | any>([]);
@@ -32,19 +22,17 @@ export const TwubricPage = (): ReactElement => {
     const isAscending = sortingOrder[criteria] === "asc";
     sortedFollowersCopy.sort((a, b) => {
       let comparison = 0;
-
-      if (criteria === "Twubric Score") {
-        comparison = a.twubric.total - b.twubric.total;
-      } else if (criteria === "Friends") {
-        comparison = a.twubric.friends - b.twubric.friends;
-      } else if (criteria === "Influence") {
-        comparison = a.twubric.influence - b.twubric.influence;
-      } else if (criteria === "Chirpiness") {
-        comparison = a.twubric.chirpiness - b.twubric.chirpiness;
-      }
+      const aValue =
+        criteria === "Twubric Score"
+          ? a.twubric.total
+          : a.twubric[criteria.toLowerCase()];
+      const bValue =
+        criteria === "Twubric Score"
+          ? b.twubric.total
+          : b.twubric[criteria.toLowerCase()];
+      comparison = aValue - bValue;
       return isAscending ? comparison : -comparison;
     });
-
     const newSortingOrder = { ...sortingOrder };
     newSortingOrder[criteria] = isAscending ? "desc" : "asc";
     setSortingOrder(newSortingOrder);
@@ -52,7 +40,7 @@ export const TwubricPage = (): ReactElement => {
   };
 
   const handleDateFilter = () => {
-    const filteredFollowers = userData.filter((d: any) => {
+    const filteredFollowers = userData.filter((d: Follower) => {
       const joinDate = new Date(d.join_date).toDateString();
       const startDate1 = new Date(startDate).toDateString();
       const endDate1 = new Date(endDate).toDateString();
@@ -67,7 +55,7 @@ export const TwubricPage = (): ReactElement => {
 
   const handleRemoveFollower = (followerId: string) => {
     const updatedFollowers = followers.filter(
-      (follower: any) => follower.uid !== followerId
+      (follower: Follower) => follower.uid !== followerId
     );
     setFollowers(updatedFollowers);
   };
@@ -76,12 +64,11 @@ export const TwubricPage = (): ReactElement => {
     if (userData) {
       setFollowers(userData);
     }
-    console.log(userData);
   }, [userData]);
 
   useEffect(() => {
     dispatch(GetData());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>

@@ -1,8 +1,8 @@
-import { UserService } from "../../services/UsersService";
+import { Follower } from "../../components/types";
 import { FETCH_DATA } from "../type/types";
 
 interface DataState {
-  data: any;
+  data: Follower[] | null;
 }
 
 const initialState: DataState = {

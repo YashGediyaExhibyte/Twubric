@@ -1,16 +1,9 @@
 import React, { useState } from "react";
+import { Follower as AddFollower } from "../types";
 
-interface Follower {
-  uid: string;
+interface Follower extends AddFollower {
   username: string;
   image: string;
-  join_date: string;
-  twubric: {
-    total: number;
-    friends: number;
-    influence: number;
-    chirpiness: number;
-  };
 }
 
 interface TwubricScoreTableProps {
